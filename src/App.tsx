@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useSprings, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import styled from "styled-components";
@@ -14,7 +14,8 @@ function Deck({
   resetNum: number;
   onReset: () => void;
 }) {
-  const [gone] = useState(() => new Set());
+  const { current: gone } = useRef(new Set());
+  const [size, setSize] = useState(0);
   const [props, api] = useSprings(cards.length, (i) => ({
     x: 0,
     y: i * -2,
@@ -33,7 +34,11 @@ function Deck({
       velocity: [vx],
     }) => {
       const trigger = vx > 0.1;
-      if (!active && trigger) gone.add(index);
+      if (!active && trigger) {
+        gone.add(index);
+        setSize(gone.size);
+      }
+
       api.start((i) => {
         if (index !== i) return;
         const isGone = gone.has(index);
@@ -85,6 +90,10 @@ function Deck({
             perspective: "1500px",
             rotateX: "20deg",
             rotateY: rotate.to((r) => `${r / 10}deg`),
+            backdropFilter:
+              Math.abs(cards.length - size - (i + 1)) <= 1
+                ? "blur(4px)"
+                : "none",
           }}
         >
           <Content
@@ -134,7 +143,7 @@ const Card = styled(animated.div)`
   border-radius: 10px;
   box-shadow: 0 8px 80px -10px rgba(50, 50, 73, 0.3),
     0 10px 10px -10px rgba(50, 50, 73, 0.3);
-  backdrop-filter: blur(4px);
+  background-color: rgba(255, 255, 255, 0.2);
 `;
 
 const Content = styled.div`
