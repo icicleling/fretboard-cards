@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { getRandomFret, getRandomString } from "./utils";
 import { FINGERBOARD_NOTES } from "./constants/fingerboard";
 
-const cards = Array(10).fill("https://source.unsplash.com/random/300x570");
+const cards = Array(10).fill("https://picsum.photos/300/570");
 
 function Deck({
   resetNum,
